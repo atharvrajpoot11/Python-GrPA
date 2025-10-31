@@ -4,115 +4,60 @@ Implement the given functions according to the docstrings.
 '''
 #answer
 
-import random
-def generate_student_data(n_students, courses, cities, random_seed=42):
-    '''
-    Create a list of dict with dictionaries representing each attributes of each student.
-    '''
-    random.seed(random_seed)
-    return [
-      {
-        "rollno": i, "city": random.choice(cities), 
-        **{course: random.randint(1,100) for course in courses} 
-      }
-      for i in range(1,n_students+1)
-    ]
+# mapping
+def is_greater_than_5(numbers:list) -> list:
+    '''Given a list of numbers, return a list of bools corresponding to whether the number is greater than 5'''
+    return list(map(lambda x: x > 5, numbers))
 
+# filtering
+def filter_less_than_5(numbers:list)->list:
+    '''Given an list of numbers, return a list of numbers that are less than 5'''
+    return list(filter(lambda x: x < 5, numbers))
 
+# aggregation with filtering
+def sum_of_two_digit_numbers(numbers:list) -> int:
+    '''Given a list of numbers find the sum of all two_digit_numbers.'''
+    return sum(filter(lambda x:10 <= x < 100, numbers))
 
-from collections import Counter
-def groupby(data:list, key:callable):
-    '''
-    Given a list of items, and a key, create a dictionary with the key as key function called 
-    on item and the list of items with the same key as the corresponding value. 
-    The order of items in the group should be the same order in the original list
-    '''
-    grouped_data = {}
+# aggregation with mapping
+def is_all_has_a(words:list)->bool:
+    '''Given a list of words check if all words has the letter a(case insensitive) in it.'''
+    return all(map(lambda word: 'a' in word.lower(),words))
 
-    for item in data:
-        group_key = key(item)
-        if group_key not in grouped_data:
-            grouped_data[group_key] = []
-        grouped_data[group_key].append(item)
+# enumerate
+def print_with_numbering(items:list): 
+    '''
+    Print a list in multiple lines with numbering.
+    Eg. ["apple","orange","banana"]
+    1. apple
+    2. orange
+    3. banana
+    '''
+    print("\n".join(f"{i+1}. {item}" for i, item in enumerate(items)))
 
-    return grouped_data
-    ...
+# zip
+def parallel_print(countries: list, capitals: list):
+    '''
+    Print the countries and capitals in multiple line seperated by a hyphen with space around it.
+    '''
+    print("\n".join(f"{country} - {capital}" for country, capital in zip(countries, capitals)))
 
-def apply_to_groups(groups:dict, func:callable):
-    '''
-    Apply a function to the list of items for each group.
-    '''
-    return {key: func(items) for key, items in groups.items()}
-    ...
+# key value list to dict
+def make_dict(keys: list, values: list) -> dict:
+    '''Create a dict with keys and values'''
+    return dict(zip(keys, values))
 
-def min_course_marks(student_data, course):
-    '''Return the min marks on a given course'''
-    # min_=float('inf')
-    # for i, mark in student_data.items():
-    #     min_=min(mark[course],min)
-    # marks = [mark[course] for mark in student_data]
-    return min(list(map(lambda x: x[course],student_data)))
-    ...
+# enumerate with filtering and map
+def indices_of_big_words(words) -> list:
+    '''Given a list of words, find the indices of the big words(length greater than 5).
+    '''
+    return(list(map(lambda iw:iw[0],filter (lambda iw: len(iw[1])>5 ,enumerate(words)))))
 
-def max_course_marks(student_data, course):
-    '''Return the max marks on a given course'''
-    return max(list(map(lambda x: x[course],student_data)))
-    ...
+# zip with mapping and aggregation
+def decode_rle(chars:str, repeats:list)->str:
+    '''
+    Create a string with i-th char from chars repeated i-th value of repeats number of times. 
 
-def rollno_of_max_marks(student_data, course):
-    '''Return the rollno of student with max marks in a course'''
-    max_mark = max_course_marks(student_data,course)
-    list_max = list(map(lambda x: x[course],student_data))
-    max_index = list_max.index(max_mark)
-    roll = list(map(lambda x: x["rollno"],student_data))
-    return roll[max_index]
-    ...
-
-def sort_rollno_by_marks(student_data, course1, course2, course3):
+    Note rle refers to Run-length encoding
     '''
-    Return a sorted list of rollno sorted based on their marks on the three course marks. 
-    course1 is compared first, then course2, then course3 to break ties.
-    Hint: use tuples comparision
-    '''
-    return list(map(lambda student: student['rollno'], sorted(
-        student_data, 
-        key=lambda x: (x[course1], x[course2], x[course3], x['rollno'])
-    )))
-    ...
-
-def count_students_by_cities(student_data):
-    '''
-    Create a dictionary with city as key and number of students from each city as value.
-    '''
-    city_counter = Counter(student['city'] for student in student_data)
-    return dict(city_counter)
-    ...
-
-def city_with_max_no_of_students(student_data):
-    '''
-    Find the city with the maximum number of students.
-    '''
-    city = count_students_by_cities(student_data)
-    return max(city, key=city.get)
-    ...
-
-def group_rollnos_by_cities(student_data):
-    '''
-    Create a dictionary with city as key and 
-    a sorted list of rollno of students that belong to 
-    that city as the value.
-    '''
-    grouped_data = groupby(student_data, key=lambda x: x['city'])
-    return {city: sorted([student['rollno'] for student in students]) for city, students in grouped_data.items()}
-    ...
-
-def city_with_max_avg_course_mark(student_data, course):
-    '''
-    Find the city with the maximum avg course marks.
-    '''
-    grouped_data = groupby(student_data, key=lambda x: x['city'])
-    avg_marks_by_city = {
-        city: sum(student[course] for student in students) / len(students)
-        for city, students in grouped_data.items()
-    }
-    return max(avg_marks_by_city, key=avg_marks_by_city.get)
+    return ''.join(map(lambda char_repeat: char_repeat[0] * char_repeat[1],zip(chars, repeats)))
